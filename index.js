@@ -26,20 +26,21 @@ let persons = [
 ];
 
 app.use(express.json());
-app.use(morgan("tiny"));
 
-app.get("/api/persons", (request, response) => {
+morgan.token("body", (request, response) => JSON.stringify(request.body));
+
+app.get("/api/persons", morgan("tiny"), (request, response) => {
   response.json(persons);
 });
 
-app.get("/info", (request, response) => {
+app.get("/info", morgan("tiny"), (request, response) => {
   response.send(
     `<p>Phonebook has info for ${persons.length} people.</p>
     <p>${new Date()}</p>`
   );
 });
 
-app.get("/api/persons/:id", (request, response) => {
+app.get("/api/persons/:id", morgan("tiny"), (request, response) => {
   const id = Number(request.params.id);
   const person = persons.find((person) => person.id === id);
   if (person) {
@@ -53,39 +54,43 @@ const generateId = () => {
   return Math.floor(Math.random() * 1000000);
 };
 
-app.post("/api/persons/", (request, response) => {
-  const body = request.body;
+app.post(
+  "/api/persons/",
+  morgan(":method :url :status :res[content-length] - :response-time ms :body"),
+  (request, response) => {
+    const body = request.body;
 
-  if (!body.name) {
-    return response.status(400).json({
-      error: "name missing",
-    });
+    if (!body.name) {
+      return response.status(400).json({
+        error: "name missing",
+      });
+    }
+
+    if (!body.number) {
+      return response.status(400).json({
+        error: "number missing",
+      });
+    }
+
+    if (persons.some((p) => p.name === body.name)) {
+      return response.status(400).json({
+        error: `${body.name} already exists in phonebook`,
+      });
+    }
+
+    const person = {
+      name: body.name,
+      number: body.number,
+      id: generateId(),
+    };
+
+    persons = persons.concat(person);
+
+    response.json(person);
   }
+);
 
-  if (!body.number) {
-    return response.status(400).json({
-      error: "number missing",
-    });
-  }
-
-  if (persons.some((p) => p.name === body.name)) {
-    return response.status(400).json({
-      error: `${body.name} already exists in phonebook`,
-    });
-  }
-
-  const person = {
-    name: body.name,
-    number: body.number,
-    id: generateId(),
-  };
-
-  persons = persons.concat(person);
-
-  response.json(person);
-});
-
-app.delete("/api/persons/:id", (request, response) => {
+app.delete("/api/persons/:id", morgan("tiny"), (request, response) => {
   const id = Number(request.params.id);
   persons = persons.filter((person) => person.id !== id);
 
