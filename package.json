@@ -1,0 +1,19 @@
+{
+  "name": "phonebook-backend",
+  "version": "0.0.1",
+  "description": "Backend for phonebook app - exercise for Full Stack Open",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
+  },
+  "author": "Andrew Padgett",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.1"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
