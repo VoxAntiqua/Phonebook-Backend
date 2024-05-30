@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
+const cors = require("cors");
 
 let persons = [
   {
@@ -26,6 +27,7 @@ let persons = [
 ];
 
 app.use(express.json());
+app.use(cors());
 
 morgan.token("body", (request, response) => JSON.stringify(request.body));
 
@@ -102,4 +104,4 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-// time spent: 5 hrs
+// time spent: 9 hrs
