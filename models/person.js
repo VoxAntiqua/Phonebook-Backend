@@ -25,7 +25,7 @@ const personSchema = new mongoose.Schema({
     type: String,
     minLength: 8,
     validate: {
-      validator: (v) => /(\d+)-(\d+)/.test(v),
+      validator: (v) => /^\d+-\d+$/.test(v),
       message:
         "number must consist of two groups of digits separated by a hyphen (-)",
     },
