@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
@@ -34,7 +35,9 @@ app.use(cors());
 morgan.token("body", (request, response) => JSON.stringify(request.body));
 
 app.get("/api/persons", morgan("tiny"), (request, response) => {
-  response.json(persons);
+  Person.find({}).then((persons) => {
+    response.json(persons);
+  });
 });
 
 app.get("/info", morgan("tiny"), (request, response) => {
@@ -54,10 +57,10 @@ app.get("/api/persons/:id", morgan("tiny"), (request, response) => {
   }
 });
 
-const generateId = () => {
+/* const generateId = () => {
   return Math.floor(Math.random() * 1000000);
 };
-
+ */
 app.post(
   "/api/persons/",
   morgan(":method :url :status :res[content-length] - :response-time ms :body"),
@@ -82,15 +85,18 @@ app.post(
       });
     }
 
-    const person = {
+    /*     const person = {
       name: body.name,
       number: body.number,
       id: generateId(),
-    };
-
-    persons = persons.concat(person);
-
-    response.json(person);
+    }; */
+    const person = new Person({
+      name: body.name,
+      number: body.number,
+    });
+    person.save().then((savedPerson) => {
+      response.json(savedPerson);
+    });
   }
 );
 
@@ -101,7 +107,7 @@ app.delete("/api/persons/:id", morgan("tiny"), (request, response) => {
   response.status(204).end();
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
