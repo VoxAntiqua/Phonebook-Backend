@@ -99,7 +99,11 @@ app.put(
       { new: true, runValidators: true, context: "query" }
     )
       .then((updatedPerson) => {
-        response.json(updatedPerson);
+        if (updatedPerson) {
+          response.json(updatedPerson);
+        } else {
+          response.status(404).end();
+        }
       })
       .catch((error) => next(error));
   }
@@ -113,4 +117,4 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-// time spent: 16 hrs
+// time spent: 17 hrs
