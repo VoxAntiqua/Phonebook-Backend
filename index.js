@@ -58,7 +58,7 @@ app.get("/api/persons/:id", morgan("tiny"), (request, response) => {
 };
  */
 app.post(
-  "/api/persons/",
+  "/api/persons",
   morgan(":method :url :status :res[content-length] - :response-time ms :body"),
   (request, response) => {
     const body = request.body;
@@ -75,11 +75,11 @@ app.post(
       });
     }
 
-    if (persons.some((p) => p.name === body.name)) {
+    /*     if (persons.some((p) => p.name === body.name)) {
       return response.status(400).json({
         error: `${body.name} already exists in phonebook`,
       });
-    }
+    } */
 
     /*     const person = {
       name: body.name,
@@ -108,4 +108,4 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-// time spent: 13 hrs
+// time spent: 14 hrs
