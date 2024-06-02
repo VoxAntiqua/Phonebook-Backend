@@ -82,7 +82,11 @@ app.post(
 app.delete("/api/persons/:id", morgan("tiny"), (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
     .then((result) => {
-      response.status(204).end();
+      if (result) {
+        response.status(204).end();
+      } else {
+        response.status(404).end();
+      }
     })
     .catch((error) => next(error));
 });
