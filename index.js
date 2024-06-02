@@ -28,18 +28,22 @@ const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: "unknown endpoint" });
 };
 
-app.get("/api/persons", morgan("tiny"), (request, response) => {
-  Person.find({}).then((persons) => {
-    response.json(persons);
-  });
+app.get("/api/persons", morgan("tiny"), (request, response, next) => {
+  Person.find({})
+    .then((persons) => {
+      response.json(persons);
+    })
+    .catch((error) => next(error));
 });
 
-app.get("/info", morgan("tiny"), (request, response) => {
-  Person.countDocuments({}).then((count) => {
-    response.send(
-      `<p>Phonebook has info for ${count} people</p><p>${new Date()}</p>`
-    );
-  });
+app.get("/info", morgan("tiny"), (request, response, next) => {
+  Person.countDocuments({})
+    .then((count) => {
+      response.send(
+        `<p>Phonebook has info for ${count} people</p><p>${new Date()}</p>`
+      );
+    })
+    .catch((error) => next(error));
 });
 
 app.get("/api/persons/:id", morgan("tiny"), (request, response, next) => {
@@ -57,7 +61,7 @@ app.get("/api/persons/:id", morgan("tiny"), (request, response, next) => {
 app.post(
   "/api/persons",
   morgan(":method :url :status :res[content-length] - :response-time ms :body"),
-  (request, response) => {
+  (request, response, next) => {
     const body = request.body;
 
     if (!body.name) {
@@ -76,9 +80,12 @@ app.post(
       name: body.name,
       number: body.number,
     });
-    person.save().then((savedPerson) => {
-      response.json(savedPerson);
-    });
+    person
+      .save()
+      .then((savedPerson) => {
+        response.json(savedPerson);
+      })
+      .catch((error) => next(error));
   }
 );
 
