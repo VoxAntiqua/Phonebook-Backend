@@ -35,10 +35,11 @@ app.get("/api/persons", morgan("tiny"), (request, response) => {
 });
 
 app.get("/info", morgan("tiny"), (request, response) => {
-  response.send(
-    `<p>Phonebook has info for ${persons.length} people.</p>
-    <p>${new Date()}</p>`
-  );
+  Person.countDocuments({}).then((count) => {
+    response.send(
+      `<p>Phonebook has info for ${count} people</p><p>${new Date()}</p>`
+    );
+  });
 });
 
 app.get("/api/persons/:id", morgan("tiny"), (request, response, next) => {
