@@ -5,7 +5,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const Person = require("./models/person");
 
-let persons = [
+/* let persons = [
   {
     id: 1,
     name: "Arto Hellas",
@@ -26,7 +26,7 @@ let persons = [
     name: "Mary Poppendieck",
     number: "39-23-6423122",
   },
-];
+]; */
 
 app.use(express.json());
 app.use(express.static("dist"));
@@ -48,13 +48,9 @@ app.get("/info", morgan("tiny"), (request, response) => {
 });
 
 app.get("/api/persons/:id", morgan("tiny"), (request, response) => {
-  const id = Number(request.params.id);
-  const person = persons.find((person) => person.id === id);
-  if (person) {
+  Person.findById(request.params.id).then((person) => {
     response.json(person);
-  } else {
-    response.status(404).end();
-  }
+  });
 });
 
 /* const generateId = () => {
