@@ -41,10 +41,16 @@ app.get("/info", morgan("tiny"), (request, response) => {
   );
 });
 
-app.get("/api/persons/:id", morgan("tiny"), (request, response) => {
-  Person.findById(request.params.id).then((person) => {
-    response.json(person);
-  });
+app.get("/api/persons/:id", morgan("tiny"), (request, response, next) => {
+  Person.findById(request.params.id)
+    .then((person) => {
+      if (person) {
+        response.json(person);
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch((error) => next(error));
 });
 
 app.post(
@@ -75,10 +81,12 @@ app.post(
   }
 );
 
-app.delete("/api/persons/:id", morgan("tiny"), (request, response) => {
-  Person.findByIdAndDelete(request.params.id).then((result) => {
-    response.status(204).end();
-  });
+app.delete("/api/persons/:id", morgan("tiny"), (request, response, next) => {
+  Person.findByIdAndDelete(request.params.id)
+    .then((result) => {
+      response.status(204).end();
+    })
+    .catch((error) => next(error));
 });
 
 app.use(unknownEndpoint);
