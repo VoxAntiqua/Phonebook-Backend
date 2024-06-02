@@ -89,6 +89,23 @@ app.delete("/api/persons/:id", morgan("tiny"), (request, response, next) => {
     .catch((error) => next(error));
 });
 
+app.put(
+  "/api/persons/:id",
+  morgan(":method :url :status :res[content-length] - :response-time ms :body"),
+  (request, response, next) => {
+    const body = request.body;
+    const person = {
+      name: body.name,
+      number: body.number,
+    };
+    Person.findByIdAndUpdate(request.params.id, person, { new: true })
+      .then((updatedPerson) => {
+        response.json(updatedPerson);
+      })
+      .catch((error) => next(error));
+  }
+);
+
 app.use(unknownEndpoint);
 app.use(errorHandler);
 
@@ -97,4 +114,4 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-// time spent: 15 hrs
+// time spent: 16 hrs
