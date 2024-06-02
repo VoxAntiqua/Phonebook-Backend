@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const morgan = require("morgan");
 const cors = require("cors");
+const Person = require("./models/person");
 
 let persons = [
   {
@@ -105,4 +106,4 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-// time spent: 12 hrs
+// time spent: 13 hrs
