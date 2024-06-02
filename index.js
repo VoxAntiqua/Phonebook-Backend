@@ -2,15 +2,31 @@ const express = require("express");
 const app = express();
 require("dotenv").config();
 
-const morgan = require("morgan");
-const cors = require("cors");
 const Person = require("./models/person");
 
-app.use(express.json());
 app.use(express.static("dist"));
-app.use(cors());
+
+const morgan = require("morgan");
 
 morgan.token("body", (request, response) => JSON.stringify(request.body));
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+
+  if (error.name === "CastError") {
+    return response.status(400).send({ error: "malformatted id" });
+  }
+
+  next(error);
+};
+
+const cors = require("cors");
+app.use(cors());
+app.use(express.json());
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: "unknown endpoint" });
+};
 
 app.get("/api/persons", morgan("tiny"), (request, response) => {
   Person.find({}).then((persons) => {
@@ -64,6 +80,9 @@ app.delete("/api/persons/:id", morgan("tiny"), (request, response) => {
     response.status(204).end();
   });
 });
+
+app.use(unknownEndpoint);
+app.use(errorHandler);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
